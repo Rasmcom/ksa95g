@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مسابقة عزنا بطبعنا</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Custom font from user-provided URL */
+        @font-face {
+            font-family: 'Saudi';
+            font-style: normal;
+            font-weight: normal;
+            src: url('https://twebs-uploads.s3.eu-west-1.amazonaws.com/1d4d9ab7-7e77-4872-8a15-76d095ecf7d2/custom_uploads/U2F1ZGktUmVndWxhci50dGYxNzM0ODY2OTk1MTI=.ttf');
+        }
+
+        body {
+            font-family: 'Saudi', sans-serif;
+            background-color: #008a4a;
+        }
+
+        /* Full-page background pattern with 10% opacity */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://e.top4top.io/p_3543uq5cs1.png');
+            background-size: 80px 80px;
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Custom alert/modal */
+        .modal {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        /* Screen transition animations */
+        .screen-transition {
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            opacity: 1;
+        }
+
+        .fade-out {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Final scores styling */
+        .scores-card {
+            border: 4px solid #86b03f;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .score-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 9999px;
+            background-color: #f3f4f6;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .score-item:nth-child(1) {
+            background-color: #ffd700;
+            transform: scale(1.05);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .score-item:nth-child(2) {
+            background-color: #c0c0c0;
+            transform: scale(1.03);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .score-item:nth-child(3) {
+            background-color: #cd7f32;
+            transform: scale(1.01);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        /* Fireworks animation CSS */
+        @keyframes firework-explode {
+            from {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            to {
+                transform: translate(var(--x), var(--y)) scale(0.2);
+                opacity: 0;
+            }
+        }
+        
+        .firework-piece {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 30px;
+            height: 30px;
+            animation: firework-explode 0.8s forwards;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        /* Custom style for correct answer button */
+        .correct-answer-button {
+            background-image: url('https://i.top4top.io/p_3544xoz2e1.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        
+        /* New styles for the logo */
+        .logo-container {
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .logo-link {
+            transition: transform 0.2s;
+        }
+
+        .logo-link:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-link img {
+            width: auto;
+            height: 100px; /* Adjust size as needed */
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen relative">
+    <!-- School Info - Top Fixed and Centered -->
+    <div class="fixed top-4 w-full text-center text-white text-base md:text-xl font-bold z-20">
+        <p>مدرسة أروى بنت عبدالمطلب بربوع الصفح</p>
+    </div>
+
+    <header class="w-full relative z-10">
+        <img src="https://c.top4top.io/p_3543j8w8v1.png" alt="Header Image" class="w-full h-auto object-cover rounded-b-xl shadow-lg">
+    </header>
+
+    <main class="flex-grow flex items-center justify-center p-4 md:p-8 relative z-10">
+        <div id="content-container" class="w-full max-w-4xl p-6 md:p-12 bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl text-center flex flex-col items-center screen-transition">
+            
+            <div id="welcome-screen" class="space-y-6">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-[#008a4a] leading-tight">مسابقة عزنا بطبعنا</h1>
+                <p class="text-lg md:text-xl text-gray-700 max-w-2xl mx-auto">
+                    أهلاً بك في مسابقة "عزنا بطبعنا"!
+                </p>
+                <p class="text-lg md:text-xl text-gray-700 max-w-2xl mx-auto">
+                     اختبر معلوماتك في مجالات متنوعة عن تاريخ وثقافة وإنجازات المملكة العربية السعودية.
+                </p>
+                <button id="start-game-btn" class="mt-6 px-8 py-4 text-xl font-bold text-white bg-[#008a4a] rounded-full shadow-lg transition-transform transform hover:scale-105 active:scale-95 duration-200">
+                    ابدأ المسابقة
+                </button>
+            </div>
+
+            <div id="team-select-screen" class="hidden space-y-8">
+                <button onclick="transitionTo(welcomeScreen)" class="absolute top-4 left-4 text-[#008a4a] text-xl px-4 py-2 rounded-full transition-colors hover:bg-gray-200">
+                    <i class="fas fa-arrow-right transform rotate-180"></i>
+                    العودة
+                </button>
+                <h2 class="text-3xl md:text-4xl font-bold text-[#008a4a]">اختر عدد الفرق</h2>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <button onclick="selectTeam(2)" class="team-btn px-6 py-3 text-xl font-bold text-white rounded-full shadow-md transition-colors hover:bg-[#86b03f]" style="background-color: #887438;">
+                        فريقان
+                    </button>
+                    <button onclick="selectTeam(3)" class="team-btn px-6 py-3 text-xl font-bold text-white rounded-full shadow-md transition-colors hover:bg-[#d25f48]" style="background-color: #7c6cb0;">
+                        ثلاثة فرق
+                    </button>
+                    <button onclick="selectTeam(4)" class="team-btn px-6 py-3 text-xl font-bold text-white rounded-full shadow-md transition-colors hover:bg-[#911a4e]" style="background-color: #86b03f;">
+                        أربعة فرق
+                    </button>
+                    <button onclick="selectTeam(5)" class="team-btn px-6 py-3 text-xl font-bold text-white rounded-full shadow-md transition-colors hover:bg-[#17a4a7]" style="background-color: #d25f48;">
+                        خمسة فرق
+                    </button>
+                    <button onclick="selectTeam(6)" class="team-btn px-6 py-3 text-xl font-bold text-white rounded-full shadow-md transition-colors hover:bg-[#7c6cb0]" style="background-color: #911a4e;">
+                        ستة فرق
+                    </button>
+                </div>
+            </div>
+
+            <div id="team-names-screen" class="hidden space-y-8">
+                <button onclick="transitionTo(teamSelectScreen)" class="absolute top-4 left-4 text-[#008a4a] text-xl px-4 py-2 rounded-full transition-colors hover:bg-gray-200">
+                    <i class="fas fa-arrow-right transform rotate-180"></i>
+                    العودة
+                </button>
+                <h2 class="text-3xl md:text-4xl font-bold text-[#d25f48]">أدخل أسماء الفرق</h2>
+                <div id="team-names-inputs" class="space-y-4 w-full">
+                </div>
+                <button onclick="proceedToDomainSelection()" class="mt-6 px-8 py-4 text-xl font-bold text-white bg-[#008a4a] rounded-full shadow-lg transition-transform transform hover:scale-105 active:scale-95 duration-200">
+                    التالي
+                </button>
+            </div>
+
+            <div id="domain-select-screen" class="hidden space-y-8">
+                <button onclick="transitionTo(teamNamesScreen)" class="absolute top-4 left-4 text-[#008a4a] text-xl px-4 py-2 rounded-full transition-colors hover:bg-gray-200">
+                    <i class="fas fa-arrow-right transform rotate-180"></i>
+                    العودة
+                </button>
+                <h2 class="text-3xl md:text-4xl font-bold text-[#887438]">اختر مجال المسابقة</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div onclick="selectDomain(0)" class="domain-card cursor-pointer p-6 rounded-2xl shadow-xl transition-transform transform hover:scale-105 active:scale-95 duration-200" style="background-color: #887438;">
+                        <img src="https://k.top4top.io/p_3540c868n1.png" alt="التاريخ الوطني" class="w-24 h-24 mx-auto mb-4">
+                        <h3 class="text-white text-2xl font-bold">التاريخ الوطني</h3>
+                    </div>
+                    <div onclick="selectDomain(1)" class="domain-card cursor-pointer p-6 rounded-2xl shadow-xl transition-transform transform hover:scale-105 active:scale-95 duration-200" style="background-color: #7c6cb0;">
+                        <img src="https://l.top4top.io/p_3540un1r62.png" alt="الثقافة السعودية" class="w-24 h-24 mx-auto mb-4">
+                        <h3 class="text-white text-2xl font-bold">الثقافة السعودية وهويتها</h3>
+                    </div>
+                    <div onclick="selectDomain(2)" class="domain-card cursor-pointer p-6 rounded-2xl shadow-xl transition-transform transform hover:scale-105 active:scale-95 duration-200" style="background-color: #86b03f;">
+                        <img src="https://a.top4top.io/p_3540s12wr3.png" alt="الإنجازات التنموية" class="w-24 h-24 mx-auto mb-4">
+                        <h3 class="text-white text-2xl font-bold">الإنجازات التنموية</h3>
+                    </div>
+                    <div onclick="selectDomain(3)" class="domain-card cursor-pointer p-6 rounded-2xl shadow-xl transition-transform transform hover:scale-105 active:scale-95 duration-200" style="background-color: #d25f48;">
+                        <img src="https://b.top4top.io/p_3540muvzh4.png" alt="رؤية 2030" class="w-24 h-24 mx-auto mb-4">
+                        <h3 class="text-white text-2xl font-bold">رؤية السعودية 2030</h3>
+                    </div>
+                    <div onclick="selectDomain(4)" class="domain-card cursor-pointer p-6 rounded-2xl shadow-xl transition-transform transform hover:scale-105 active:scale-95 duration-200" style="background-color: #911a4e;">
+                        <img src="https://c.top4top.io/p_35400ai435.png" alt="الجغرافيا والطبيعة" class="w-24 h-24 mx-auto mb-4">
+                        <h3 class="text-white text-2xl font-bold">الجغرافيا والطبيعة</h3>
+                    </div>
+                    <div onclick="selectDomain(5)" class="domain-card cursor-pointer p-6 rounded-2xl shadow-xl transition-transform transform hover:scale-105 active:scale-95 duration-200" style="background-color: #17a4a7;">
+                        <img src="https://d.top4top.io/p_3540n47bz6.png" alt="الشخصيات الوطنية" class="w-24 h-24 mx-auto mb-4">
+                        <h3 class="text-white text-2xl font-bold">الشخصيات الوطنية</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div id="quiz-screen" class="hidden w-full space-y-8">
+                 <button onclick="transitionTo(domainSelectScreen)" class="absolute top-4 left-4 text-[#008a4a] text-xl px-4 py-2 rounded-full transition-colors hover:bg-gray-200">
+                    <i class="fas fa-arrow-right transform rotate-180"></i>
+                    العودة
+                </button>
+                <div class="flex items-center justify-between flex-wrap gap-2">
+                    <h2 id="domain-title" class="text-2xl md:text-3xl font-bold text-gray-800"></h2>
+                    <div id="team-info" class="text-lg md:text-xl font-bold text-gray-800">
+                        <span class="text-sm md:text-base">الفريق: </span>
+                        <span id="current-team-name" class="text-xl md:text-2xl text-[#008a4a]"></span>
+                        <span class="text-sm md:text-base">النتيجة: </span>
+                        <span id="current-team-score" class="text-xl md:text-2xl font-extrabold text-[#008a4a]">0</span>
+                    </div>
+                </div>
+                <div id="question-card" class="bg-white p-6 md:p-8 rounded-2xl shadow-2xl border-2 border-solid border-[#d25f48] min-h-[300px] flex flex-col justify-between">
+                    <p id="question-text" class="text-xl md:text-2xl font-bold text-gray-800 mb-6"></p>
+                    <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    </div>
+                    <div id="feedback-container" class="mt-4 hidden">
+                    </div>
+                </div>
+                <div id="next-btn-container" class="hidden">
+                     <button onclick="nextQuestion()" class="mt-6 px-8 py-4 text-xl font-bold text-white bg-[#008a4a] rounded-full shadow-lg transition-transform transform hover:scale-105 active:scale-95 duration-200">
+                        السؤال التالي
+                    </button>
+                </div>
+            </div>
+            
+            <div id="results-screen" class="hidden space-y-6">
+                <h2 class="text-3xl md:text-4xl font-bold text-[#17a4a7]">انتهت المسابقة!</h2>
+                <p class="text-lg md:text-xl text-gray-700">لقد أكملت جميع الأسئلة في هذا المجال.</p>
+                <div class="scores-card space-y-4">
+                    <h3 class="text-2xl md:text-3xl font-bold text-[#d25f48]">النتائج النهائية للفرق</h3>
+                    <div id="final-scores-list" class="space-y-2">
+                    </div>
+                </div>
+                <button onclick="resetGame()" class="mt-6 px-8 py-4 text-xl font-bold text-white bg-[#008a4a] rounded-full shadow-lg transition-transform transform hover:scale-105 active:scale-95 duration-200">
+                    العودة للبداية
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="w-full relative z-10 p-4">
+        <div class="flex flex-col md:flex-row-reverse justify-center items-center">
+            <img src="https://d.top4top.io/p_354359m5q2.png" alt="Footer Image" class="w-full h-auto object-cover rounded-t-xl shadow-lg">
+        </div>
+    </footer>
+
+    <!-- Student Info - Bottom Fixed and Centered -->
+    <div class="fixed bottom-4 w-full text-center text-white text-base md:text-xl font-bold z-20">
+        <p>عمل الطالبة: ريمان ضيف الله الزهراني أول ثانوي</p>
+    </div>
+
+    <div id="custom-modal" class="modal fixed inset-0 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-xl shadow-2xl p-6 text-center max-w-sm w-full space-y-4">
+            <h3 class="text-2xl font-bold text-red-500">خطأ</h3>
+            <p id="modal-message" class="text-lg text-gray-700">الرجاء إدخال أسماء جميع الفرق قبل المتابعة.</p>
+            <button onclick="closeModal()" class="px-6 py-2 bg-blue-500 text-white rounded-full font-bold transition-transform transform hover:scale-105">موافق</button>
+        </div>
+    </div>
+    
+    <audio id="background-music" loop>
+        <source src="https://j.top4top.io/m_3543cy3z20.m4a" type="audio/mp4">
+        Your browser does not supports the audio element.
+    </audio>
+
+    <script>
+        // Game State Management
+        let gameState = {
+            teamSize: 0,
+            teamNames: [],
+            teamScores: [],
+            currentTeamIndex: 0,
+            currentDomain: null,
+            currentQuestionIndex: 0,
+            questionsData: []
+        };
+        
+        // Quiz Data
+        const quizData = [
+            // Domain 1: التاريخ الوطني (National History)
+            {
+                title: "المجال الأول: التاريخ الوطني",
+                icon: "https://k.top4top.io/p_3540c868n1.png",
+                color: "#887438",
+                questions: [
+                    { q: "في أي عام تم توحيد المملكة العربية السعودية؟", options: ["1929م", "1932م", "1945م", "1919م"], answer: "1932م" },
+                    { q: "من هو مؤسس المملكة العربية السعودية؟", options: ["الملك سعود بن عبدالعزيز", "الملك عبدالله بن عبدالعزيز", "الملك عبدالعزيز بن عبدالرحمن", "الملك فهد بن عبدالعزيز"], answer: "الملك عبدالعزيز بن عبدالرحمن" },
+                    { q: "ما اسم الدولة السعودية الأولى؟", options: ["الدولة السعودية الحديثة", "الدولة السعودية الأولى", "الدولة السعودية الثانية", "المملكة العربية"], answer: "الدولة السعودية الأولى" },
+                    { q: "ما اسم الدولة السعودية الثانية؟", options: ["الدولة السعودية الأولى", "الدولة السعودية الثانية", "إمارة نجد", "المملكة العربية"], answer: "الدولة السعودية الثانية" },
+                    { q: "متى دخل الملك عبدالعزيز الرياض واستعادها؟", options: ["1900م", "1902م", "1923م", "1930م"], answer: "1902م" },
+                    { q: "ما اسم المعركة التي استعاد فيها الملك عبدالعزيز الرياض؟", options: ["معركة بدر", "معركة الرياض", "معركة الطائف", "معركة مكة"], answer: "معركة الرياض" },
+                    { q: "ما اسم السور الذي كان يحيط بمدينة الرياض قديماً؟", options: ["سور نجد", "سور الرياض", "سور الحجاز", "سور الدرعية"], answer: "سور الرياض" },
+                    { q: "ما هو لقب الملك عبدالعزيز؟", options: ["أبو الفقراء", "أبو النهضة", "أبو الملوك", "أبو التنمية"], answer: "أبو الملوك" },
+                    { q: "ما هو شعار المملكة العربية السعودية؟", options: ["سيف ونخلة", "سيف وصقر", "علم أخضر وصقر", "نخلة واحدة"], answer: "سيف ونخلة" },
+                    { q: "ماذا يرمز السيفان في شعار المملكة؟", options: ["العدل والأمن", "القوة والمنعة", "التاريخ والحضارة", "الزراعة والصناعة"], answer: "القوة والمنعة" },
+                    { q: "ماذا ترمز النخلة في شعار المملكة؟", options: ["العطاء والخير", "الشجاعة", "القوة", "الحكمة"], answer: "العطاء والخير" },
+                    { q: "من أبرز إنجازات الملك سعود؟", options: ["توسعة الحرمين", "إنشاء التلفزيون", "إنشاء الجامعات", "تطوير الصناعة"], answer: "توسعة الحرمين" },
+                    { q: "من أبرز إنجازات الملك فيصل؟", options: ["إنشاء التلفزيون", "حرب تحرير الكويت", "إدخال النفط", "بناء الدرعية"], answer: "إنشاء التلفزيون" },
+                    { q: "من أبرز إنجازات الملك خالد؟", options: ["بناء الجامعات", "حرب الخليج", "اكتشاف النفط", "رؤية 2030"], answer: "بناء الجامعات" },
+                    { q: "من أبرز إنجازات الملك فهد؟", options: ["التعليم العام المجاني", "معركة الرياض", "حرب الخليج الثانية", "توحيد المملكة"], answer: "التعليم العام المجاني" },
+                    { q: "من أبرز إنجازات الملك عبدالله؟", options: ["برنامج الابتعاث", "حرب تحرير الكويت", "تأسيس الدرعية", "توحيد المملكة"], answer: "برنامج الابتعاث" },
+                    { q: "من أبرز إنجازات الملك سلمان؟", options: ["إطلاق رؤية السعودية 2030", "برنامج الابتعاث", "توسعة الحرمين الأولى", "إنشاء التلفزيون"], answer: "إطلاق رؤية السعودية 2030" },
+                    { q: "من هو ولي العهد الحالي؟", options: ["الأمير سعود الفيصل", "الأمير تركي بن فيصل", "الأمير محمد بن سلمان", "الأمير نايف بن عبدالعزيز"], answer: "الأمير محمد بن سلمان" },
+                    { q: "ما أهمية يوم 23 سبتمبر في تاريخ المملكة؟", options: ["إعلان الرؤية", "إعلان التوحيد", "بداية النفط", "ميلاد الملك عبدالعزيز"], answer: "إعلان التوحيد" },
+                    { q: "كم استغرق الملك عبدالعزيز في رحلة توحيد المملكة؟", options: ["10 سنوات", "30 سنة", "50 سنة", "70 سنة"], answer: "30 سنة" }
+                ]
+            },
+            // Domain 2: الثقافة السعودية وهويتها (Saudi Culture and Identity)
+            {
+                title: "المجال الثاني: الثقافة السعودية وهويتها",
+                icon: "https://l.top4top.io/p_3540un1r62.png",
+                color: "#7c6cb0",
+                questions: [
+                    { q: "ما معنى شعار اليوم الوطني 95 \"عزنا بطبعنا\"؟", options: ["الاعتزاز بالثروة", "الاعتزاز بالأصالة والهوية", "الاعتزاز بالقوة العسكرية", "الاعتزاز بالتطور الصناعي"], answer: "الاعتزاز بالأصالة والهوية" },
+                    { q: "ما أبرز القيم التي تركز عليها الهوية الوطنية؟", options: ["الأصالة والكرم", "التجارة والسياسة", "الصناعة والزراعة", "الفنون فقط"], answer: "الأصالة والكرم" },
+                    { q: "ما أشهر الأزياء الشعبية في نجد؟", options: ["الدراعة", "العقال", "الزبون", "الجبة"], answer: "الدراعة" },
+                    { q: "ما أشهر الأزياء الشعبية في الحجاز؟", options: ["الجبة", "الدراعة", "الدقلة", "الفروة"], answer: "الجبة" },
+                    { q: "ما أشهر الأزياء الشعبية في المنطقة الشرقية؟", options: ["البشت", "الدراعة", "العقال", "الدقلة"], answer: "البشت" },
+                    { q: "من الأكلات الشعبية السعودية المشهورة؟", options: ["الكبسة", "البيتزا", "السوشي", "الملوخية"], answer: "الكبسة" },
+                    { q: "الأكلة التي تشتهر بها المنطقة الجنوبية؟", options: ["العصيدة", "الكبسة", "الجريش", "الهريس"], answer: "العصيدة" },
+                    { q: "الأكلة التي تشتهر بها المنطقة الشرقية؟", options: ["الهريس", "الكبسة", "العصيدة", "القرصان"], answer: "الهريس" },
+                    { q: "الأكلة التي تشتهر بها الحجاز؟", options: ["المنتو", "الجريش", "العصيدة", "الهريس"], answer: "المنتو" },
+                    { q: "الأكلة التي تشتهر بها نجد؟", options: ["الجريش", "المنتو", "العصيدة", "الهريس"], answer: "الجريش" },
+                    { q: "ما هو العرضة السعودية؟", options: ["رقصة الحرب الوطنية", "رقصة شعبية جنوبية", "رقصة حجازية", "رقصة عالمية"], answer: "رقصة الحرب الوطنية" },
+                    { q: "ما الأدوات المستخدمة في العرضة السعودية؟", options: ["السيوف", "الطبول فقط", "البنادق", "الأقواس"], answer: "السيوف" },
+                    { q: "أي الأشعار تُلقى في العرضة؟", options: ["أشعار الفخر والحماسة", "أشعار الغزل", "أشعار الرثاء", "أشعار الهجاء"], answer: "أشعار الفخر والحماسة" },
+                    { q: "كيف تعبر الفنون الشعبية عن الهوية السعودية؟", options: ["من خلال إبراز التراث والأصالة", "من خلال التكنولوجيا", "من خلال التجارة", "من خلال السياسة"], answer: "من خلال إبراز التراث والأصالة" },
+                    { q: "ماذا يرمز اللون الأخضر في العلم السعودي؟", options: ["الإسلام", "القوة", "الوحدة", "الحرية"], answer: "الإسلام" },
+                    { q: "ما معنى كلمة التوحيد في العلم السعودي؟", options: ["لا إله إلا الله محمد رسول الله", "الله أكبر", "بسم الله الرحمن الرحيم", "الحمد لله"], answer: "لا إله إلا الله محمد رسول الله" },
+                    { q: "لماذا كُتب السيف تحت كلمة التوحيد في العلم؟", options: ["للدلالة على العدل والقوة", "للدلالة على العلم", "للدلالة على الكرم", "للدلالة على الأمن"], answer: "للدلالة على العدل والقوة" },
+                    { q: "ما الفرق بين الزي الرجالي والنسائي التقليدي السعودي؟", options: ["الرجالي بسيط والنسائي مزخرف", "النسائي أبيض والرجالي أسود", "الرجالي ملون والنسائي أبيض", "الرجالي قصير والنسائي طويل"], answer: "الرجالي بسيط والنسائي مزخرف" },
+                    { q: "كيف يعكس شعار \"عزنا بطبعنا\" أصالة الثقافة؟", options: ["بربط الماضي بالحاضر", "بتركيز على الصناعة", "بالاعتماد على التكنولوجيا", "بإلغاء التراث"], answer: "بربط الماضي بالحاضر" }
+                ]
+            },
+            // Domain 3: الإنجازات التنموية (Developmental Achievements)
+            {
+                title: "المجال الثالث: الإنجازات التنموية",
+                icon: "https://a.top4top.io/p_3540s12wr3.png",
+                color: "#86b03f",
+                questions: [
+                    { q: "ما أبرز إنجازات المملكة في مجال التعليم؟", options: ["الجامعات الحديثة", "الأسلحة", "التجارة فقط", "النفط"], answer: "الجامعات الحديثة" },
+                    { q: "ما أبرز إنجازات المملكة في الصحة؟", options: ["المستشفيات الحديثة", "المصانع", "الموانئ", "الأسواق"], answer: "المستشفيات الحديثة" },
+                    { q: "من أبرز إنجازات المملكة في البنية التحتية؟", options: ["الطرق السريعة", "السدود فقط", "المزارع", "المناجم"], answer: "الطرق السريعة" },
+                    { q: "من إنجازات المملكة في الحج؟", options: ["توسعة الحرمين", "بناء السفن", "فتح المدارس", "صناعة النفط"], answer: "توسعة الحرمين" },
+                    { q: "ما أبرز الإنجازات الاقتصادية؟", options: ["أرامكو السعودية", "مكتبة الملك فهد", "التلفزيون", "جامعة الأميرة نورة"], answer: "أرامكو السعودية" },
+                    { q: "في أي مجال يُعد مشروع نيوم إنجازًا؟", options: ["التنمية المستدامة", "الزراعة", "الرياضة", "الطب"], answer: "التنمية المستدامة" },
+                    { q: "ما المشروع المرتبط بالطاقة النظيفة؟", options: ["مشروع الهيدروجين الأخضر", "مشروع المترو", "مشروع الحرمين", "مشروع سكة حديد"], answer: "مشروع الهيدروجين الأخضر" },
+                    { q: "ما أبرز إنجازات السعودية في الرياضة؟", options: ["استضافة البطولات العالمية", "بناء السدود", "بناء المتاحف", "توسيع الأسواق"], answer: "استضافة البطولات العالمية" },
+                    { q: "ما إنجاز المملكة في النقل الجوي؟", options: ["الخطوط السعودية", "سكة الحديد فقط", "المترو", "السفن"], answer: "الخطوط السعودية" },
+                    { q: "ما إنجاز المملكة في الاتصالات؟", options: ["شبكات الجيل الخامس", "الصحف فقط", "الأزياء", "الأسواق"], answer: "شبكات الجيل الخامس" },
+                    { q: "ما إنجاز المملكة في الثقافة؟", options: ["موسم الرياض", "موسم جدة", "موسم الشرقية", "كل المواسم"], answer: "موسم الرياض" },
+                    { q: "ما إنجاز المملكة في مجال البيئة؟", options: ["مبادرة السعودية الخضراء", "الطاقة النووية", "التعدين", "المزارع"], answer: "مبادرة السعودية الخضراء" },
+                    { q: "ما أبرز إنجازات المملكة في مجال الحج؟", options: ["قطار المشاعر", "ميناء جدة", "مطار الدمام", "سكة الشمال"], answer: "قطار المشاعر" },
+                    { q: "ما إنجاز المملكة في مجال الطاقة؟", options: ["كونها أكبر مصدر للنفط", "صناعة الطائرات", "الزراعة", "التجارة"], answer: "كونها أكبر مصدر للنفط" },
+                    { q: "ما إنجاز المملكة في مجال التعليم العالي؟", options: ["جامعة الملك عبدالله للعلوم والتقنية", "جامعة القاهرة", "جامعة الشارقة", "جامعة الخرطوم"], answer: "جامعة الملك عبدالله للعلوم والتقنية" },
+                    { q: "ما إنجاز المملكة في مجال الاقتصاد؟", options: ["الانضمام لمجموعة العشرين", "الفوز بكأس العالم", "الانضمام للاتحاد الأوروبي", "بناء برج خليفة"], answer: "الانضمام لمجموعة العشرين" },
+                    { q: "ما إنجاز المملكة في السياحة؟", options: ["مشروع البحر الأحمر", "مشروع المزارع", "مشروع المناجم", "مشروع النفط"], answer: "مشروع البحر الأحمر" },
+                    { q: "ما إنجاز المملكة في الثقافة العالمية؟", options: ["تسجيل الدرعية في اليونسكو", "بناء ملعب", "بناء جسر", "بناء محطة قطار"], answer: "تسجيل الدرعية في اليونسكو" },
+                    { q: "ما إنجاز المملكة في مجال الصناعة؟", options: ["المدن الصناعية", "المصانع الصغيرة فقط", "الأسواق", "السفن"], answer: "المدن الصناعية" },
+                    { q: "كيف يعكس شعار \"عزنا بطبعنا\" التنمية؟", options: ["التمسك بالأصالة مع التقدم", "إلغاء التراث", "تجاهل الماضي", "التركيز على النفط فقط"], answer: "التمسك بالأصالة مع التقدم" }
+                ]
+            },
+            // Domain 4: رؤية السعودية 2030 (Saudi Vision 2030)
+            {
+                title: "المجال الرابع: رؤية السعودية 2030",
+                icon: "https://b.top4top.io/p_3540muvzh4.png",
+                color: "#d25f48",
+                questions: [
+                    { q: "متى أُطلقت رؤية السعودية 2030؟", options: ["2015م", "2016م", "2018م", "2020م"], answer: "2016م" },
+                    { q: "من أطلق رؤية السعودية 2030؟", options: ["الملك سلمان", "ولي العهد محمد بن سلمان", "الملك عبدالله", "الملك فهد"], answer: "ولي العهد محمد بن سلمان" },
+                    { q: "ما أحد أهداف رؤية 2030؟", options: ["تنويع مصادر الدخل", "الاعتماد على النفط", "زيادة الاستيراد", "الاعتماد على الزراعة فقط"], answer: "تنويع مصادر الدخل" },
+                    { q: "ما أحد محاور رؤية 2030؟", options: ["وطن طموح", "نفط مستدام", "صناعة فقط", "سياسة خارجية"], answer: "وطن طموح" },
+                    { q: "ما المحور الثاني في رؤية 2030؟", options: ["اقتصاد مزدهر", "نفط دائم", "جيش قوي", "تعليم"], answer: "اقتصاد مزدهر" },
+                    { q: "ما المحور الثالث في رؤية 2030؟", options: ["مجتمع حيوي", "اقتصاد نفطي", "سياسة جديدة", "صحة فقط"], answer: "مجتمع حيوي" },
+                    { q: "ما الهدف السياحي للرؤية؟", options: ["استقبال 100 مليون زائر", "10 ملايين زائر", "20 مليون زائر", "50 مليون زائر"], answer: "استقبال 100 مليون زائر" },
+                    { q: "ما الهدف من مشروع نيوم؟", options: ["مدينة مستقبلية", "مدينة تقليدية", "مدينة تراثية", "مدينة زراعية"], answer: "مدينة مستقبلية" },
+                    { q: "ما أحد برامج تحقيق الرؤية؟", options: ["برنامج التحول الوطني", "برنامج النفط", "برنامج الزراعة", "برنامج التوظيف فقط"], answer: "برنامج التحول الوطني" },
+                    { q: "ما أحد برامج تحقيق الرؤية؟", options: ["برنامج جودة الحياة", "برنامج الرياضة فقط", "برنامج البترول", "برنامج النقل"], answer: "برنامج جودة الحياة" },
+                    { q: "ما أحد برامج تحقيق الرؤية؟", options: ["برنامج الإسكان", "برنامج النقل الجوي", "برنامج السوق", "برنامج المياه"], answer: "برنامج الإسكان" },
+                    { q: "ما أحد برامج تحقيق الرؤية؟", options: ["برنامج التخصيص", "برنامج البترول", "برنامج الزراعة", "برنامج التعليم"], answer: "برنامج التخصيص" },
+                    { q: "ما أحد برامج تحقيق الرؤية؟", options: ["برنامج تنمية القدرات البشرية", "برنامج الطيران", "برنامج السوق", "برنامج الثقافة"], answer: "برنامج تنمية القدرات البشرية" },
+                    { q: "ما أحد برامج تحقيق الرؤية؟", options: ["برنامج تطوير القطاع المالي", "برنامج الرياضة", "برنامج الزراعة", "برنامج الطاقة"], answer: "برنامج تطوير القطاع المالي" },
+                    { q: "ما البرنامج الخاص بالثقافة والترفيه؟", options: ["برنامج جودة الحياة", "برنامج الإسكان", "برنامج التعليم", "برنامج الاقتصاد"], answer: "برنامج جودة الحياة" },
+                    { q: "كيف تدعم رؤية 2030 الثقافة الوطنية؟", options: ["بإبراز التراث والهوية", "بإلغاء التراث", "بالاعتماد على الخارج", "بعدم الاستثمار"], answer: "بإبراز التراث والهوية" },
+                    { q: "ما المشروع السياحي الضخم في البحر الأحمر؟", options: ["مشروع البحر الأحمر", "مشروع نيوم", "مشروع الدرعية", "مشروع الهدا"], answer: "مشروع البحر الأحمر" },
+                    { q: "ما المشروع الترفيهي الضخم بالرياض؟", options: ["القدية", "نيوم", "البحر الأحمر", "الدرعية"], answer: "القدية" },
+                    { q: "كيف يعكس شعار \"عزنا بطبعنا\" الرؤية؟", options: ["الجمع بين الأصالة والتطوير", "تجاهل الماضي", "الاعتماد على الخارج", "الاعتماد على النفط فقط"], answer: "الجمع بين الأصالة والتطوير" },
+                    { q: "ما علاقة رؤية 2030 باليوم الوطني؟", options: ["استشراف المستقبل انطلاقًا من الماضي", "تجاهل الماضي", "الاعتماد على النفط فقط", "التوقف عن التنمية"], answer: "استشراف المستقبل انطلاقًا من الماضي" }
+                ]
+            },
+            // Domain 5: الجغرافيا والطبيعة السعودية (Saudi Geography and Nature)
+            {
+                title: "المجال الخامس: الجغرافيا والطبيعة السعودية",
+                icon: "https://c.top4top.io/p_35400ai435.png",
+                color: "#911a4e",
+                questions: [
+                    { q: "ما أكبر صحراء في المملكة؟", options: ["الربع الخالي", "النفود", "الدهناء", "الحجاز"], answer: "الربع الخالي" },
+                    { q: "ما أعلى جبل في المملكة؟", options: ["جبل السودة", "جبل أحد", "جبل النور", "جبل طويق"], answer: "جبل السودة" },
+                    { q: "ما أطول وادٍ في المملكة؟", options: ["وادي الرمة", "وادي الدواسر", "وادي حنيفة", "وادي فاطمة"], answer: "وادي الرمة" },
+                    { q: "ما أكبر مدينة في المملكة؟", options: ["الرياض", "جدة", "مكة", "الدمام"], answer: "الرياض" },
+                    { q: "ما العاصمة الاقتصادية؟", options: ["جدة", "الدمام", "مكة", "أبها"], answer: "جدة" },
+                    { q: "ما العاصمة الدينية؟", options: ["مكة المكرمة", "المدينة المنورة", "الرياض", "الطائف"], answer: "مكة المكرمة" },
+                    { q: "ما العاصمة الإدارية؟", options: ["الرياض", "جدة", "مكة", "الطائف"], answer: "الرياض" },
+                    { q: "ما البحر الذي تطل عليه المملكة من الغرب؟", options: ["البحر الأحمر", "الخليج العربي", "بحر العرب", "البحر المتوسط"], answer: "البحر الأحمر" },
+                    { q: "ما الخليج الذي تطل عليه المملكة من الشرق؟", options: ["الخليج العربي", "البحر الأحمر", "بحر العرب", "المتوسط"], answer: "الخليج العربي" },
+                    { q: "ما أهم جبل في الرياض؟", options: ["جبل طويق", "جبل أحد", "جبل السودة", "جبل النور"], answer: "جبل طويق" },
+                    { q: "ما أبرز واحة زراعية في الشرقية؟", options: ["الأحساء", "العلا", "أبها", "الطائف"], answer: "الأحساء" },
+                    { q: "ما المحمية الشهيرة في العلا؟", options: ["محمية شرعان", "محمية الطائف", "محمية الرياض", "محمية عسير"], answer: "محمية شرعان" },
+                    { q: "ما أكبر ميناء بحري في المملكة؟", options: ["ميناء جدة الإسلامي", "ميناء الدمام", "ميناء ينبع", "ميناء جازان"], answer: "ميناء جدة الإسلامي" },
+                    { q: "ما أكبر مطار في المملكة؟", options: ["مطار الملك فهد الدولي", "مطار جدة", "مطار الرياض", "مطار الطائف"], answer: "مطار الملك فهد الدولي" },
+                    { q: "ما منطقة الجبل الأخضر؟", options: ["عسير", "الطائف", "العلا", "الرياض"], answer: "عسير" },
+                    { q: "ما أهم معلم طبيعي في العلا؟", options: ["صخرة الفيل", "جبل طويق", "جبل السودة", "جبل أحد"], answer: "صخرة الفيل" },
+                    { q: "ما أكبر سهل ساحلي؟", options: ["تهامة", "الأحساء", "نجد", "عسير"], answer: "تهامة" },
+                    { q: "ما أهم مورد طبيعي بعد النفط؟", options: ["الذهب", "الفحم", "القصدير", "النحاس"], answer: "الذهب" },
+                    { q: "ما أطول سكة حديد في المملكة؟", options: ["سكة الشمال", "قطار الحرمين", "قطار الرياض", "قطار الدمام"], answer: "سكة الشمال" },
+                    { q: "كيف يعكس شعار \"عزنا بطبعنا\" الطبيعة السعودية؟", options: ["الأصالة المستمدة من الأرض", "الصناعة فقط", "التكنولوجيا فقط", "الاعتماد على الخارج"], answer: "الأصالة المستمدة من الأرض" }
+                ]
+            },
+            // Domain 6: الشخصيات الوطنية (National Figures)
+            {
+                title: "المجال السادس: الشخصيات الوطنية",
+                icon: "https://d.top4top.io/p_3540n47bz6.png",
+                color: "#17a4a7",
+                questions: [
+                    { q: "من هو أول ملك للمملكة العربية السعودية؟", options: ["الملك عبدالعزيز", "الملك سعود", "الملك فيصل", "الملك خالد"], answer: "الملك عبدالعزيز" },
+                    { q: "من هو ثاني ملوك السعودية؟", options: ["الملك سعود", "الملك فيصل", "الملك خالد", "الملك فهد"], answer: "الملك سعود" },
+                    { q: "من هو ثالث ملوك السعودية؟", options: ["الملك فيصل", "الملك سعود", "الملك خالد", "الملك سلمان"], answer: "الملك فيصل" },
+                    { q: "من هو رابع ملوك السعودية؟", options: ["الملك خالد", "الملك سعود", "الملك فهد", "الملك عبدالله"], answer: "الملك خالد" },
+                    { q: "من هو خامس ملوك السعودية؟", options: ["الملك فهد", "الملك خالد", "الملك عبدالله", "الملك سلمان"], answer: "الملك فهد" },
+                    { q: "من هو سادس ملوك السعودية؟", options: ["الملك عبدالله", "الملك سعود", "الملك فيصل", "الملك فهد"], answer: "الملك عبدالله" },
+                    { q: "من هو سابع ملوك السعودية والحالي؟", options: ["الملك سلمان بن عبدالعزيز", "الملك عبدالله", "الملك فهد", "الملك فيصل"], answer: "الملك سلمان بن عبدالعزيز" },
+                    { q: "من هو ولي العهد الحالي؟", options: ["الأمير نايف", "الأمير محمد بن سلمان", "الأمير سلطان", "الأمير سعود الفيصل"], answer: "الأمير محمد بن سلمان" },
+                    { q: "ما اللقب الذي يُعرف به الملك سلمان؟", options: ["خادم الحرمين الشريفين", "ولي العهد الأمين", "ملك العزم", "ملك الإصلاح"], answer: "خادم الحرمين الشريفين" },
+                    { q: "ما لقب ولي العهد الأمير محمد بن سلمان؟", options: ["مهندس الرؤية", "باني النهضة", "فارس العرب", "قائد الاقتصاد"], answer: "مهندس الرؤية" },
+                    { q: "من هو مؤسس رؤية السعودية 2030؟", options: ["الملك سلمان", "ولي العهد محمد بن سلمان", "الملك عبدالله", "الملك فهد"], answer: "ولي العهد محمد بن سلمان" },
+                    { q: "من هو الأمير الذي كان يُلقب بوزير النفط الأشهر؟", options: ["أحمد زكي يماني", "سعود الفيصل", "نايف بن عبدالعزيز", "سلطان بن عبدالعزيز"], answer: "أحمد زكي يماني" },
+                    { q: "من هو الأمير الذي عُرف بوزير الخارجية الأطول خدمة في العالم؟", options: ["سعود الفيصل", "تركي الفيصل", "نايف بن عبدالعزيز", "بندر بن سلطان"], answer: "سعود الفيصل" },
+                    { q: "من هو الأمير الذي كان وزيرًا للداخلية ووليًا للعهد سابقًا؟", options: ["نايف بن عبدالعزيز", "سلطان بن عبدالعزيز", "محمد بن نايف", "تركي الفيصل"], answer: "نايف بن عبدالعزيز" },
+                    { q: "من هو الأمير الذي تولى وزارة الدفاع وولاية العهد سابقًا؟", options: ["سلطان بن عبدالعزيز", "سعود الفيصل", "نايف بن عبدالعزيز", "بندر بن سلطان"], answer: "سلطان بن عبدالعزيز" },
+                    { q: "من هو أول وزير للتعليم في السعودية؟", options: ["فهد بن عبدالعزيز", "خالد الفيصل", "محمد بن سلمان", "فيصل بن فهد"], answer: "فهد بن عبدالعزيز" },
+                    { q: "من هو الأمير الذي عُرف بدعمه للثقافة والأدب والفنون؟", options: ["خالد الفيصل", "سعود الفيصل", "تركي الفيصل", "سلطان بن سلمان"], answer: "خالد الفيصل" },
+                    { q: "من هو أول رائد فضاء سعودي؟", options: ["الأمير سلطان بن سلمان", "الأمير محمد بن سلمان", "الأمير نايف", "الأمير تركي الفيصل"], answer: "الأمير سلطان بن سلمان" },
+                    { q: "من هي الشخصية النسائية السعودية التي عُرفت في مجال التعليم؟", options: ["الأميرة نورة بنت عبدالرحمن", "الأميرة هيفاء بنت سعود", "الأميرة فهدة بنت خالد", "الأميرة عادلة بنت عبدالله"], answer: "الأميرة نورة بنت عبدالرحمن" },
+                    { q: "كيف يعكس شعار \"عزنا بطبعنا\" ارتباط الشخصيات الوطنية بتاريخ المملكة؟", options: ["بتمسكهم بالقيم والأصالة", "بالاعتماد على الخارج", "بالتجاهل للهوية", "بالتركيز على النفط فقط"], answer: "بتمسكهم بالقيم والأصالة" }
+                ]
+            }
+        ];
+        
+        // UI Elements
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const teamSelectScreen = document.getElementById('team-select-screen');
+        const teamNamesScreen = document.getElementById('team-names-screen');
+        const teamNamesInputsContainer = document.getElementById('team-names-inputs');
+        const domainSelectScreen = document.getElementById('domain-select-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const domainTitle = document.getElementById('domain-title');
+        const feedbackContainer = document.getElementById('feedback-container');
+        const customModal = document.getElementById('custom-modal');
+        const modalMessage = document.getElementById('modal-message');
+        const backgroundMusic = document.getElementById('background-music');
+        const questionCard = document.getElementById('question-card');
+        const logoContainer = document.getElementById('logo-container');
+
+        // Fireworks images URLs
+        const fireworksImages = [
+            'https://c.top4top.io/p_3544gudjn1.png',
+            'https://d.top4top.io/p_3544yidvr2.png',
+            'https://e.top4top.io/p_35446wwkw3.png',
+            'https://f.top4top.io/p_3544jiwt74.png',
+            'https://g.top4top.io/p_3544dbcs15.png',
+            'https://h.top4top.io/p_3544di0dv6.png'
+        ];
+
+        // Set initial volume for background music
+        backgroundMusic.volume = 0.5;
+
+        // Team-specific UI elements
+        const currentTeamNameDisplay = document.getElementById('current-team-name');
+        const currentTeamScoreDisplay = document.getElementById('current-team-score');
+        
+        // Functions for screen transitions
+        function transitionTo(screen) {
+            const contentContainer = document.getElementById('content-container');
+            // Fade out the current content
+            contentContainer.classList.remove('fade-in');
+            contentContainer.classList.add('fade-out');
+            
+            setTimeout(() => {
+                // Hide all screens
+                const screens = [welcomeScreen, teamSelectScreen, teamNamesScreen, domainSelectScreen, quizScreen, resultsScreen];
+                screens.forEach(s => s.classList.add('hidden'));
+                
+                // Show the new screen
+                screen.classList.remove('hidden');
+                
+                // Reset and fade in the new content
+                contentContainer.classList.remove('fade-out');
+                contentContainer.classList.add('fade-in');
+
+                if (screen === teamNamesScreen) {
+                    renderTeamNameInputs();
+                } else if (screen === quizScreen) {
+                    renderQuestion();
+                }
+            }, 500); // Match CSS transition duration
+        }
+        
+        function startGameAndMusic() {
+            backgroundMusic.play();
+            transitionTo(teamSelectScreen);
+        }
+
+        // Helper function to shuffle array
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Main game logic
+        function startGame() {
+            transitionTo(teamSelectScreen);
+        }
+
+        function selectTeam(size) {
+            gameState.teamSize = size;
+            transitionTo(teamNamesScreen);
+        }
+
+        function renderTeamNameInputs() {
+            teamNamesInputsContainer.innerHTML = '';
+            for (let i = 1; i <= gameState.teamSize; i++) {
+                const inputGroup = document.createElement('div');
+                inputGroup.classList.add('flex', 'flex-col', 'items-center', 'space-y-2');
+                const label = document.createElement('label');
+                label.textContent = `اسم الفريق ${i}`;
+                label.classList.add('text-xl', 'text-gray-700', 'font-bold');
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.id = `team-name-${i}`;
+                input.classList.add('w-full', 'max-w-md', 'p-3', 'rounded-full', 'shadow-md', 'text-center', 'text-gray-800', 'focus:outline-none', 'focus:ring-2', 'focus:ring-[#008a4a]');
+                input.placeholder = `أدخل اسم الفريق ${i}`;
+                inputGroup.appendChild(label);
+                inputGroup.appendChild(input);
+                teamNamesInputsContainer.appendChild(inputGroup);
+            }
+        }
+
+        function proceedToDomainSelection() {
+            gameState.teamNames = [];
+            let allNamesEntered = true;
+            for (let i = 1; i <= gameState.teamSize; i++) {
+                const input = document.getElementById(`team-name-${i}`);
+                if (input.value.trim() === '') {
+                    showModal('الرجاء إدخال أسماء جميع الفرق قبل المتابعة.');
+                    allNamesEntered = false;
+                    break;
+                }
+                gameState.teamNames.push(input.value.trim());
+            }
+
+            if (allNamesEntered) {
+                gameState.teamScores = new Array(gameState.teamSize).fill(0);
+                gameState.currentTeamIndex = 0;
+                transitionTo(domainSelectScreen);
+            }
+        }
+
+        function selectDomain(domainIndex) {
+            gameState.currentDomain = quizData[domainIndex];
+            gameState.currentQuestionIndex = 0;
+            // Shuffle questions for each domain
+            gameState.currentDomain.questions.sort(() => Math.random() - 0.5);
+            transitionTo(quizScreen);
+        }
+
+        function renderQuestion() {
+            const currentQuestion = gameState.currentDomain.questions[gameState.currentQuestionIndex];
+            if (!currentQuestion) {
+                showResults();
+                return;
+            }
+            
+            // Update UI with current team's info and highlight the current team's name
+            currentTeamNameDisplay.textContent = `${gameState.teamNames[gameState.currentTeamIndex]}`;
+            currentTeamNameDisplay.classList.add('text-[#008a4a]'); // اللون الأخضر
+            currentTeamScoreDisplay.textContent = gameState.teamScores[gameState.currentTeamIndex];
+
+            // Update UI
+            domainTitle.textContent = gameState.currentDomain.title;
+            questionText.textContent = currentQuestion.q;
+            optionsContainer.innerHTML = '';
+            feedbackContainer.classList.add('hidden');
+            document.getElementById('question-card').style.borderColor = gameState.currentDomain.color;
+            
+            // Shuffle options before rendering
+            const shuffledOptions = shuffleArray([...currentQuestion.options]);
+
+            // Render options
+            shuffledOptions.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-btn', 'px-6', 'py-4', 'text-lg', 'md:text-xl', 'font-semibold', 'text-gray-800', 'bg-gray-200', 'rounded-full', 'shadow-md', 'transition-transform', 'transform', 'hover:scale-105', 'active:scale-95', 'duration-200');
+                button.onclick = () => checkAnswer(option, currentQuestion.answer, button);
+                optionsContainer.appendChild(button);
+            });
+        }
+        
+        function createFireworks(button) {
+            const buttonRect = button.getBoundingClientRect();
+            const startX = buttonRect.left + buttonRect.width / 2;
+            const startY = buttonRect.top + buttonRect.height / 2;
+            
+            for (let i = 0; i < 20; i++) {
+                const piece = document.createElement('img');
+                const randomImage = fireworksImages[Math.floor(Math.random() * fireworksImages.length)];
+                piece.src = randomImage;
+                piece.classList.add('firework-piece');
+                piece.style.top = `${startY}px`;
+                piece.style.left = `${startX}px`;
+
+                // Set random destination for each piece
+                const angle = Math.random() * 2 * Math.PI;
+                const distance = Math.random() * 200 + 50; // Random distance between 50 and 250
+                const endX = Math.cos(angle) * distance;
+                const endY = Math.sin(angle) * distance;
+                
+                piece.style.setProperty('--x', `${endX}px`);
+                piece.style.setProperty('--y', `${endY}px`);
+                
+                document.body.appendChild(piece);
+
+                setTimeout(() => {
+                    piece.remove();
+                }, 800);
+            }
+        }
+        
+        function checkAnswer(selectedOption, correctAnswer, button) {
+            // Disable all options
+            document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
+            
+            // Check answer and provide feedback
+            if (selectedOption === correctAnswer) {
+                gameState.teamScores[gameState.currentTeamIndex]++;
+                currentTeamScoreDisplay.textContent = gameState.teamScores[gameState.currentTeamIndex];
+                
+                button.classList.remove('bg-gray-200', 'text-gray-800');
+                button.classList.add('bg-green-500', 'text-white', 'border-4', 'border-green-700', 'correct-answer-button');
+                
+                createFireworks(button); // Call the fireworks effect
+                showFeedback('إجابة صحيحة', '✅');
+            } else {
+                button.classList.remove('bg-gray-200', 'text-gray-800');
+                button.classList.add('bg-red-500', 'text-white', 'border-4', 'border-red-700');
+                showFeedback('إجابة خاطئة', '❌');
+                // Highlight correct answer
+                document.querySelectorAll('.option-btn').forEach(btn => {
+                    if (btn.textContent === correctAnswer) {
+                        btn.classList.remove('bg-gray-200', 'text-gray-800');
+                        btn.classList.add('bg-green-500', 'text-white', 'border-4', 'border-green-700', 'correct-answer-button');
+                    }
+                });
+            }
+            
+            // Automatically move to the next question after 4 seconds
+            setTimeout(nextQuestion, 4000);
+        }
+        
+        function showFeedback(text, icon) {
+            feedbackContainer.innerHTML = `
+                <div class="flex items-center justify-center space-x-2 space-x-reverse text-2xl md:text-3xl font-bold transition-all duration-300 transform scale-105">
+                    <span>${icon}</span>
+                    <p>${text}</p>
+                </div>
+            `;
+            feedbackContainer.classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            // Apply fade-out effect to the main content container
+            const contentContainer = document.getElementById('content-container');
+            contentContainer.classList.remove('fade-in');
+            contentContainer.classList.add('fade-out');
+
+            setTimeout(() => {
+                gameState.currentQuestionIndex++;
+                gameState.currentTeamIndex = (gameState.currentTeamIndex + 1) % gameState.teamSize;
+                renderQuestion();
+
+                // Apply fade-in effect to the content after updating
+                contentContainer.classList.remove('fade-out');
+                contentContainer.classList.add('fade-in');
+            }, 500); // Wait for 500ms for the animation
+        }
+
+        function showResults() {
+            transitionTo(resultsScreen);
+            finalScoresList.innerHTML = '';
+            
+            // Sort teams by score in descending order
+            const teams = gameState.teamNames.map((name, index) => ({
+                name: name,
+                score: gameState.teamScores[index]
+            }));
+            teams.sort((a, b) => b.score - a.score);
+
+            teams.forEach((team, index) => {
+                const teamScoreDiv = document.createElement('div');
+                teamScoreDiv.classList.add('score-item');
+                teamScoreDiv.innerHTML = `
+                    <span class="text-2xl font-bold">${index + 1}. ${team.name}</span>
+                    <span class="text-2xl font-extrabold text-[#008a4a]">${team.score} نقطة</span>
+                `;
+                finalScoresList.appendChild(teamScoreDiv);
+            });
+        }
+
+        function resetGame() {
+            transitionTo(welcomeScreen);
+            gameState = {
+                teamSize: 0,
+                teamNames: [],
+                teamScores: [],
+                currentTeamIndex: 0,
+                currentDomain: null,
+                currentQuestionIndex: 0
+            };
+        }
+
+        // Custom Modal Functions
+        function showModal(message) {
+            modalMessage.textContent = message;
+            customModal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            customModal.classList.add('hidden');
+        }
+        
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('start-game-btn').addEventListener('click', startGameAndMusic);
+        });
+    </script>
+</body>
+</html>
