@@ -125,7 +125,43 @@
             background-position: center;
         }
         
-        /* New styles for the logo */
+        /* New styles for the pledge and logo */
+        .pledge-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .pledge-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .circular-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid #008a4a;
+        }
+
+        .circular-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .pledge-text {
+            font-size: 1.2rem;
+            color: #4a4a4a;
+            max-width: 600px;
+        }
+
         .logo-container {
             margin-top: 2rem;
             display: flex;
@@ -150,11 +186,6 @@
     </style>
 </head>
 <body class="flex flex-col min-h-screen relative">
-    <!-- School Info - Top Fixed and Centered -->
-    <div class="fixed top-4 w-full text-center text-white text-base md:text-xl font-bold z-20">
-        <p>مدرسة أروى بنت عبدالمطلب بربوع الصفح</p>
-    </div>
-
     <header class="w-full relative z-10">
         <img src="https://c.top4top.io/p_3543j8w8v1.png" alt="Header Image" class="w-full h-auto object-cover rounded-b-xl shadow-lg">
     </header>
@@ -162,13 +193,34 @@
     <main class="flex-grow flex items-center justify-center p-4 md:p-8 relative z-10">
         <div id="content-container" class="w-full max-w-4xl p-6 md:p-12 bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl text-center flex flex-col items-center screen-transition">
             
-            <div id="welcome-screen" class="space-y-6">
+            <div id="pledge-screen" class="space-y-6">
+                <div class="pledge-header">
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-[#008a4a] leading-tight">تعهد</h1>
+                    <div class="circular-image">
+                        <img src="https://k.top4top.io/p_35163lq2x1.gif" alt="صورة متحركة">
+                    </div>
+                </div>
+                <p class="pledge-text">
+                    أقر وأتعهد أمام الله أنني سأستخدم هذا الموقع للأغراض الشخصية فقط، ولن أستخدمه لأي غرض تجاري أو ربحي. كما أتعهد بعدم مشاركة رابط الموقع مع أي شخص آخر.
+                </p>
+                <p class="text-lg md:text-xl text-gray-700">
+                    يرجى الضغط على "أوافق" للمتابعة
+                </p>
+                <button id="accept-pledge-btn" class="mt-6 px-8 py-4 text-xl font-bold text-white bg-[#008a4a] rounded-full shadow-lg transition-transform transform hover:scale-105 active:scale-95 duration-200">
+                    أوافق
+                </button>
+                <div id="logo-container" class="logo-container hidden">
+                    <p class="text-lg text-gray-700 mb-2">لطلباتكم يشرفنا تواصلكم على قناة رسم للتصميم والخدمات التعليمية اضغط على الشعار للانضمام</p>
+                    <a href="https://www.rasmcom.com" target="_blank" class="logo-link">
+                        <img src="https://e.top4top.io/p_3463x5tj40.png" alt="شعار قناة رسم">
+                    </a>
+                </div>
+            </div>
+
+            <div id="welcome-screen" class="space-y-6 hidden">
                 <h1 class="text-4xl md:text-5xl font-extrabold text-[#008a4a] leading-tight">مسابقة عزنا بطبعنا</h1>
                 <p class="text-lg md:text-xl text-gray-700 max-w-2xl mx-auto">
-                    أهلاً بك في مسابقة "عزنا بطبعنا"!
-                </p>
-                <p class="text-lg md:text-xl text-gray-700 max-w-2xl mx-auto">
-                     اختبر معلوماتك في مجالات متنوعة عن تاريخ وثقافة وإنجازات المملكة العربية السعودية.
+                    أهلاً بك في مسابقة "عزنا بطبعنا"! اختبر معلوماتك في مجالات متنوعة عن تاريخ وثقافة وإنجازات المملكة العربية السعودية.
                 </p>
                 <button id="start-game-btn" class="mt-6 px-8 py-4 text-xl font-bold text-white bg-[#008a4a] rounded-full shadow-lg transition-transform transform hover:scale-105 active:scale-95 duration-200">
                     ابدأ المسابقة
@@ -268,9 +320,12 @@
                     <div id="feedback-container" class="mt-4 hidden">
                     </div>
                 </div>
-                <div id="next-btn-container" class="hidden">
-                     <button onclick="nextQuestion()" class="mt-6 px-8 py-4 text-xl font-bold text-white bg-[#008a4a] rounded-full shadow-lg transition-transform transform hover:scale-105 active:scale-95 duration-200">
+                <div id="next-btn-container" class="flex justify-center gap-4 mt-6">
+                     <button onclick="nextQuestion()" class="px-8 py-4 text-xl font-bold text-white bg-[#008a4a] rounded-full shadow-lg transition-transform transform hover:scale-105 active:scale-95 duration-200">
                         السؤال التالي
+                    </button>
+                     <button onclick="endQuiz()" class="px-8 py-4 text-xl font-bold text-white bg-red-600 rounded-full shadow-lg transition-transform transform hover:scale-105 active:scale-95 duration-200">
+                        إنهاء المسابقة
                     </button>
                 </div>
             </div>
@@ -296,11 +351,6 @@
         </div>
     </footer>
 
-    <!-- Student Info - Bottom Fixed and Centered -->
-    <div class="fixed bottom-4 w-full text-center text-white text-base md:text-xl font-bold z-20">
-        <p>عمل الطالبة: ريمان ضيف الله الزهراني أول ثانوي</p>
-    </div>
-
     <div id="custom-modal" class="modal fixed inset-0 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-xl shadow-2xl p-6 text-center max-w-sm w-full space-y-4">
             <h3 class="text-2xl font-bold text-red-500">خطأ</h3>
@@ -311,7 +361,7 @@
     
     <audio id="background-music" loop>
         <source src="https://j.top4top.io/m_3543cy3z20.m4a" type="audio/mp4">
-        Your browser does not supports the audio element.
+        Your browser does not support the audio element.
     </audio>
 
     <script>
@@ -498,6 +548,8 @@
         ];
         
         // UI Elements
+        const pledgeScreen = document.getElementById('pledge-screen');
+        const acceptPledgeBtn = document.getElementById('accept-pledge-btn');
         const welcomeScreen = document.getElementById('welcome-screen');
         const teamSelectScreen = document.getElementById('team-select-screen');
         const teamNamesScreen = document.getElementById('team-names-screen');
@@ -514,6 +566,7 @@
         const backgroundMusic = document.getElementById('background-music');
         const questionCard = document.getElementById('question-card');
         const logoContainer = document.getElementById('logo-container');
+        const finalScoresList = document.getElementById('final-scores-list');
 
         // Fireworks images URLs
         const fireworksImages = [
@@ -541,7 +594,7 @@
             
             setTimeout(() => {
                 // Hide all screens
-                const screens = [welcomeScreen, teamSelectScreen, teamNamesScreen, domainSelectScreen, quizScreen, resultsScreen];
+                const screens = [pledgeScreen, welcomeScreen, teamSelectScreen, teamNamesScreen, domainSelectScreen, quizScreen, resultsScreen];
                 screens.forEach(s => s.classList.add('hidden'));
                 
                 // Show the new screen
@@ -749,6 +802,10 @@
                 contentContainer.classList.add('fade-in');
             }, 500); // Wait for 500ms for the animation
         }
+        
+        function endQuiz() {
+            showResults();
+        }
 
         function showResults() {
             transitionTo(resultsScreen);
@@ -793,9 +850,25 @@
         function closeModal() {
             customModal.classList.add('hidden');
         }
+
+        // Function to check and show logo based on timestamp
+        function checkAndShowLogo() {
+            const lastShown = localStorage.getItem('lastLogoShown');
+            const now = new Date().getTime();
+            const oneHour = 60 * 60 * 1000;
+
+            if (!lastShown || (now - lastShown) > oneHour) {
+                logoContainer.classList.remove('hidden');
+                localStorage.setItem('lastLogoShown', now);
+            }
+        }
         
         // Event listeners
         document.addEventListener('DOMContentLoaded', () => {
+            checkAndShowLogo();
+            acceptPledgeBtn.addEventListener('click', () => {
+                transitionTo(welcomeScreen);
+            });
             document.getElementById('start-game-btn').addEventListener('click', startGameAndMusic);
         });
     </script>
